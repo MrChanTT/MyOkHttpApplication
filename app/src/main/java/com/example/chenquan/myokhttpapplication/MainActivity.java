@@ -18,6 +18,7 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity {
     private TextView tv;
     private HttpGet httpGet;
+    private MyHandler myHandler;
     private static final int GETRESPONSE = 0x000001;
 
     @Override
@@ -48,7 +49,10 @@ public class MainActivity extends AppCompatActivity {
                         runOnUiThread(new Runnable() {
                             @Override
                             public void run() {
-                                tv.setText(""+text);
+                                Message msg = new Message();
+                                msg.what = GETRESPONSE;
+                                msg.obj = text;
+                                myHandler.sendMessage(msg);
                             }
                         });
                     }
@@ -67,13 +71,15 @@ public class MainActivity extends AppCompatActivity {
 
     private void init(){
         httpGet = new HttpGet();
+        myHandler = new MyHandler();
     }
     class MyHandler extends Handler{
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what){
                 case GETRESPONSE:
-                    httpGet.get("http://www.baidu.com");
+                    String text = msg.obj.toString();
+                   tv.setText(""+text);
                     break;
                 default:
                     break;
